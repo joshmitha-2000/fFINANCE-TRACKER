@@ -1,0 +1,66 @@
+Why localStorage Gets Overwritten
+
+When you use localStorage.setItem(key, value), it replaces any existing value associated with that key. This means:
+
+    If the Key Exists:
+        When you call setItem with a key that already exists in localStorage, the old value will be replaced with the new value you provide.
+        If you don't first retrieve the existing value using getItem, you'll end up losing any previously stored data.
+
+    If the Key Does Not Exist:
+        If the key doesn't exist (like the first time you're adding transactions), it will create a new entry.
+
+Example of Overwriting
+
+Let’s illustrate this with a simple example:
+
+javascript
+
+const newTransaction = { Amount: '100', Category: 'income', date: '2024-10-01' };
+
+// This will overwrite any existing data in localStorage under the key 'transactions'
+localStorage.setItem('transactions', JSON.stringify(newTransaction));
+
+In the example above, if there was any previous transaction stored under the key 'transactions', it will be completely overwritten by the new transaction object.
+How to Prevent Overwriting
+
+To avoid overwriting data in localStorage, you should:
+
+    Fetch Existing Data: Before calling setItem, retrieve the current data using getItem.
+
+    Update the Data: Append the new transaction to the existing data.
+
+    Save Back to localStorage: Convert the updated data back to a string and save it using setItem.
+
+Correct Approach
+
+Here's how you can correctly handle adding new transactions without overwriting existing data:
+
+javascript
+
+const newTransaction = { Amount: '100', Category: 'income', date: '2024-10-01' };
+
+// Step 1: Fetch existing transactions
+const storedTransactions = localStorage.getItem('transactions');
+let updatedTransactions = [];
+
+// Step 2: Parse existing transactions, if any
+if (storedTransactions) {
+    updatedTransactions = JSON.parse(storedTransactions);  // Convert string back to array
+}
+
+// Step 3: Add the new transaction to the array
+updatedTransactions.push(newTransaction);
+
+// Step 4: Save the updated transactions back to localStorage
+localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+
+Summary of the Steps
+
+    Retrieve existing data with localStorage.getItem.
+    Check if data exists and parse it with JSON.parse.
+    Add the new transaction to the array of existing transactions.
+    Convert the updated array back to a string and save it with localStorage.setItem.
+
+By following these steps, you ensure that you’re not overwriting existing data, allowing you to accumulate transactions correctly in local storage.
+
+
